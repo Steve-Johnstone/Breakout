@@ -3,7 +3,7 @@ var ctx = canvas.getContext("2d")
 var ballX = canvas.width/2
 var ballY = canvas.height-30
 var ballDirectionX = -4
-var ballDirectionY = -4.5
+var ballDirectionY = -4
 var ballRadius = 10
 var paddleHeight = 10
 var paddleWidth = 75
@@ -23,7 +23,15 @@ var bricks = []
 for (var c = 0; c < brickColumnCount; c++){
     bricks[c] = []
     for (var r = 0; r < brickRowCount; r++){
-        bricks[c][r] = { x: 0, y: 0, status: 1}
+        if(r ==0){
+        bricks[c][r] = { x: 0, y: 0, status: 1, health: 1}
+        }
+        else if (r ==1){
+            bricks[c][r] = { x: 0, y: 0, status: 1, health: 2}
+        }
+        else if (r ==2){
+            bricks[c][r] = { x: 0, y: 0, status: 1, health: 3}
+        }
     }
 }
 
@@ -72,8 +80,11 @@ function collisionDetection(){
             if(b.status ==1){
             if (ballX > b.x && ballX < b.x +brickWidth && ballY > b.y && ballY < b.y + brickHeight){
                 ballDirectionY = -ballDirectionY
-                b.status = 0
-                score+=1
+                b.health -= 1
+                if (b.health == 0){
+                    b.status = 0
+                    score += 1
+                }
                 if (score == brickRowCount*brickColumnCount){
                     alert ("YOU WIN!")
                     document.location.reload()
@@ -113,7 +124,7 @@ function draw(){
                 ballX = canvas.width/2;
                 ballY = canvas.height-30;
                 ballDirectionX = 4;
-                ballDirectionY = -4.5;
+                ballDirectionY = -4;
                 paddleX = (canvas.width-paddleWidth)/2;
             }
     }
@@ -126,6 +137,7 @@ function draw(){
 }
 requestAnimationFrame(draw)
 }
+
 function drawBricks(){
     for (var c = 0; c < brickColumnCount; c++){
         for (var r = 0; r < brickRowCount; r++){
@@ -136,7 +148,12 @@ function drawBricks(){
             bricks [c][r].y = brickY
             ctx.beginPath()
             ctx.rect(brickX, brickY, brickWidth, brickHeight)
-            ctx.fillStyle = "#0095DD"
+            if (r == 0){
+                ctx.fillStyle = "#341EBE"}
+            else if (r == 1){
+                ctx.fillStyle = "#5A4F9F"}
+            else if (r == 2){
+                ctx.fillStyle = "#120f1f"}
             ctx.fill ()
             ctx.closePath()
             }
@@ -147,7 +164,7 @@ function drawBricks(){
 function drawBall(){
     ctx.beginPath()
     ctx.arc(ballX, ballY, ballRadius, 0, Math.PI*2)
-    ctx.fillStyle = "red"
+    ctx.fillStyle = "#cc0033"
     ctx.fill()
     ctx.closePath()
 }
@@ -155,7 +172,7 @@ function drawBall(){
 function drawPaddle(){
     ctx.beginPath()
     ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight)
-    ctx.fillStyle = "rgb(0,120,0)"
+    ctx.fillStyle = "#0A490B"
     ctx.fill()
     ctx.closePath()
 }
