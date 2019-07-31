@@ -144,6 +144,7 @@ function drawBricks(){
             if(bricks[c][r].status ==1){
             var brickX = (c*(brickWidth+brickPadding)) + brickOffsetLeft
             var brickY = (r*(brickHeight+brickPadding)) + brickOffsetTop
+            var b = bricks[c][r]
             bricks [c][r].x = brickX
             bricks [c][r].y = brickY
             ctx.beginPath()
@@ -151,15 +152,25 @@ function drawBricks(){
             if (r == 0){
                 ctx.fillStyle = "#341EBE"}
             else if (r == 1){
-                ctx.fillStyle = "#5A4F9F"}
+                if (b.health == 2){
+                    ctx.fillStyle = "#5A4F9F"}
+                if (b.health == 1){
+                    ctx.fillStyle = "#7a72b2"}
+                }
             else if (r == 2){
-                ctx.fillStyle = "#120f1f"}
+                    if(b.health == 3){
+                        ctx.fillStyle = "#C41020"}
+                    if (b.health == 2){
+                        ctx.fillStyle = "#D34C58"}
+                    if (b.health == 1){
+                        ctx.fillStyle = "#E28890"}
+                    }
+                }
             ctx.fill ()
             ctx.closePath()
             }
         }
     }
-}
 
 function drawBall(){
     ctx.beginPath()
