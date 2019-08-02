@@ -1,37 +1,47 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d")
+var healthTotal = 0
 var ballX = canvas.width/2
 var ballY = canvas.height-30
-var ballDirectionX = -4
-var ballDirectionY = -4
+var ballDirectionX = -6
+var ballDirectionY = -6
 var ballRadius = 10
-var paddleHeight = 10
-var paddleWidth = 75
+var paddleHeight = 12
+var paddleWidth = 100
 var paddleX = (canvas.width-paddleWidth) / 2
 var rightPressed = false
 var leftPressed = false
 var brickRowCount = 3
-var brickColumnCount = 5
-var brickWidth = 75
+var brickColumnCount = 4
+var brickWidth = 90
 var brickHeight = 20
 var brickPadding = 10
-var brickOffsetTop = 30
-var brickOffsetLeft = 30
+var brickOffsetTop = 120
+var brickOffsetLeft = 250
 var score = 0
-var lives = 3
+var lives = 20
+var level = 1
 var bricks = []
 for (var c = 0; c < brickColumnCount; c++){
     bricks[c] = []
     for (var r = 0; r < brickRowCount; r++){
-        if(r ==0){
+        if(r == 0){
         bricks[c][r] = { x: 0, y: 0, status: 1, health: 1}
         }
-        else if (r ==1){
+        else if (r == 1){
             bricks[c][r] = { x: 0, y: 0, status: 1, health: 2}
         }
-        else if (r ==2){
+        else if (r == 2){
             bricks[c][r] = { x: 0, y: 0, status: 1, health: 3}
         }
+        else if (r == 3){
+            bricks[c][r] = { x: 0, y: 0, status: 1, health: 4}
+        }
+        else if (r == 4){
+            bricks[c][r] = { x: 0, y: 0, status: 1, health: 5}
+        }
+        var b = bricks[c][r]
+        healthTotal += b.health
     }
 }
 
@@ -41,7 +51,7 @@ document.addEventListener("mousemove", mouseMoveHandler, false)
 
 function mouseMoveHandler(e){
    var relativeX = e.clientX - canvas.offsetLeft;
-   if (relativeX > 0 && relativeX < canvas.width){
+   if (relativeX > paddleWidth/2 && relativeX < canvas.width - paddleWidth/2){
        paddleX = relativeX - paddleWidth/2
    }
 }
@@ -70,7 +80,18 @@ function drawGameInfo(){
     ctx.fillText("Score: " + score, 8, 20)
     ctx.font = "16px Arial"
     ctx.fillStyle = "red"
-    ctx.fillText("Lives: " + lives, 400, 20)
+    ctx.fillText("Lives: " + lives, 800, 20)
+    ctx.fillStyle = "green"
+    ctx.fillText("Level: " + level, 400, 20)
+}
+
+function average(array){
+    var total = 0
+    for (let i = 0; i < array.length; i++) {
+        total += array[i]
+    }
+    return total / array.length
+
 }
 
 function collisionDetection(){
@@ -81,13 +102,16 @@ function collisionDetection(){
             if (ballX > b.x && ballX < b.x +brickWidth && ballY > b.y && ballY < b.y + brickHeight){
                 ballDirectionY = -ballDirectionY
                 b.health -= 1
+                healthTotal -=1
                 if (b.health == 0){
                     b.status = 0
                     score += 1
+                    console.log (ballDirectionX)
+                    console.log (ballDirectionY)
                 }
-                if (score == brickRowCount*brickColumnCount){
-                    alert ("YOU WIN!")
-                    document.location.reload()
+                if (healthTotal == 0){
+                    alert ("LEVEL UP!")
+                    levelUp()
                 }
             }
             }
@@ -123,8 +147,8 @@ function draw(){
             else {
                 ballX = canvas.width/2;
                 ballY = canvas.height-30;
-                ballDirectionX = 4;
-                ballDirectionY = -4;
+                ballDirectionX = 5;
+                ballDirectionY = -5;
                 paddleX = (canvas.width-paddleWidth)/2;
             }
     }
@@ -150,7 +174,7 @@ function drawBricks(){
             ctx.beginPath()
             ctx.rect(brickX, brickY, brickWidth, brickHeight)
             if (r == 0){
-                ctx.fillStyle = "#341EBE"}
+                    ctx.fillStyle = "#341EBE"}
             else if (r == 1){
                 if (b.health == 2){
                     ctx.fillStyle = "#5A4F9F"}
@@ -158,13 +182,35 @@ function drawBricks(){
                     ctx.fillStyle = "#7a72b2"}
                 }
             else if (r == 2){
-                    if(b.health == 3){
-                        ctx.fillStyle = "#C41020"}
-                    if (b.health == 2){
-                        ctx.fillStyle = "#D34C58"}
-                    if (b.health == 1){
-                        ctx.fillStyle = "#E28890"}
+                if(b.health == 3){
+                    ctx.fillStyle = "#F86D07"}
+                if (b.health == 2){
+                    ctx.fillStyle = "#FA9245"}
+                if (b.health == 1){
+                    ctx.fillStyle = "#FBB683"}
                     }
+            else if (r == 3){
+                if(b.health == 4){
+                    ctx.fillStyle = "#C41020"}
+                if (b.health == 3){
+                    ctx.fillStyle = "#D34C58"}
+                if (b.health == 2){
+                    ctx.fillStyle = "#E28890"}
+                if (b.health == 1){
+                    ctx.fillStyle = "#E28890"}
+                        }
+            else if (r == 4){
+                if (b.health == 5){
+                    ctx.fillStyle = "#C734D5"}
+                if (b.health == 4){
+                    ctx.fillStyle = "#D567E0"}
+                if (b.health == 3){
+                    ctx.fillStyle = "#DC80E5"}
+                if (b.health == 2){
+                    ctx.fillStyle = "#E39AEA"}
+                if (b.health == 1){
+                    ctx.fillStyle = "#EAB3EF"}
+                }
                 }
             ctx.fill ()
             ctx.closePath()
@@ -175,7 +221,7 @@ function drawBricks(){
 function drawBall(){
     ctx.beginPath()
     ctx.arc(ballX, ballY, ballRadius, 0, Math.PI*2)
-    ctx.fillStyle = "#cc0033"
+    ctx.fillStyle = "black"
     ctx.fill()
     ctx.closePath()
 }
@@ -189,3 +235,35 @@ function drawPaddle(){
 }
 
 draw()
+
+function levelUp(){
+    level +=1
+    brickColumnCount +=1
+    brickRowCount += 1
+    brickOffsetLeft -= 50
+    ballDirectionX -= 1
+    for (var c = 0; c < brickColumnCount; c++){
+        bricks[c] = []
+        for (var r = 0; r < brickRowCount; r++){
+            if(r ==0){
+            bricks[c][r] = { x: 0, y: 0, status: 1, health: 1}
+            }
+            else if (r ==1){
+                bricks[c][r] = { x: 0, y: 0, status: 1, health: 2}
+            }
+            else if (r ==2){
+                bricks[c][r] = { x: 0, y: 0, status: 1, health: 3}
+            }
+            else if (r == 3){
+                bricks[c][r] = { x: 0, y: 0, status: 1, health: 4}
+            }
+            else if (r == 4){
+                bricks[c][r] = { x: 0, y: 0, status: 1, health: 5}
+            }
+        var b = bricks[c][r]
+        healthTotal += b.health
+        }
+    }
+    draw()
+}
+
